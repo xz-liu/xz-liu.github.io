@@ -1,0 +1,17 @@
+<!-- 
+First Author Publications <small>(\# indicates equal contribution.)</small>
+::: tip Unsupervised Entity Alignment for Temporal Knowledge Graphs.  
+[[Paper](https://dl.acm.org/doi/10.1145/3543507.3583381)] [[Code](https://github.com/ZJU-DAILY/DualMatch)] [[Video](https://youtu.be/kqSx9mdj6Co)]  
+<small>***Xiaoze Liu**, Junyang Wu, Tianyi Li, Lu Chen, Yunjun Gao*</small>  
+<small>*The 2023 ACM Web Conference (WWW 2023)*</small>
+:::
+::: tip ClusterEA: Scalable Entity Alignment with Stochastic Training and Normalized Mini-batch Similarities.  
+[[Paper](https://dl.acm.org/doi/10.1145/3534678.3539331)] [[Code](https://github.com/xz-liu/ClusterEA)] [[Dataset](https://drive.google.com/file/d/15jeGD-6pVGlqI5jCn7KJfGIER6AeoQ-L/view)]  
+<small>*Yunjun Gao#, **Xiaoze Liu**#, Junyang Wu, Tianyi Li, Pengfei Wang, Lu Chen*</small>  
+<small>*The 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD 2022)*</small>
+::: 
+::: tip  PinSQL: Pinpoint Root Cause SQLs to Resolve Performance Issues in Cloud Databases. 
+[[Paper](https://ieeexplore.ieee.org/document/9835371)] [[Product](https://alibabacloud.com/products/das)] [[Blog Post](https://developer.aliyun.com/article/981876)]  
+<small>***Xiaoze Liu**, Zheng Yin, Chao Zhao, Congcong Ge, Lu Chen, Yunjun Gao, Dimeng Li, Ziting Wang, Gaozhong Liang, Jian Tan, Feifei Li*</small>  
+<small>*38th IEEE International Conference on Data Engineering (ICDE 2022)*</small>
+:::  -->
