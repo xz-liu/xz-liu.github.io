@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="The Trojan in the Vocabulary: Stealthy Sabotage of LLM Composition (preprint, 2025).">
+  <meta name="keywords" content="tokenizer transplant, LLM composition, vocabulary attack, preprint">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Trojan in the Vocabulary: Stealthy Sabotage of LLM Composition</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script async src="www.googletagmanager.com"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-PM84P5861R');
+  </script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="#">
+      <strong>TokenForge</strong>
+    </a>
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-end">
+      <a class="navbar-item" href="#intro-demo">Abstract</a>
+      <a class="navbar-item" href="#overview">Overview</a>
+      <a class="navbar-item" href="#threat-model">Threat Model</a>
+      <a class="navbar-item" href="#framework">Attack Framework</a>
+      <a class="navbar-item" href="#evaluation">Evaluation</a>
+      <a class="navbar-item" href="#experiments">Experiments</a>
+      <a class="navbar-item" href="#limitations">Limitations</a>
+      <a class="navbar-item" href="#BibTeX">BibTeX</a>
+    </div>
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            <em>The Trojan in the Vocabulary:</em><br>
+            Stealthy Sabotage of LLM Composition
+          </h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Xiaoze Liu</span>,
+            <span class="author-block">Weichen Yu</span>,
+            <span class="author-block">Matt Fredrikson</span>,
+            <span class="author-block">Xiaoqian Wang</span>,
+            <span class="author-block">Jing Gao</span>
+          </div>
+
+          <div class="is-size-6 publication-authors">
+            <span class="author-block">Purdue University</span>,
+            <span class="author-block">Carnegie Mellon University</span>
+          </div>
+
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2601.00065"
+                   class="button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/xz-liu/tokenforge"
+                   class="button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#BibTeX"
+                   class="button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-quote-right"></i>
+                  </span>
+                  <span>BibTeX</span>
+                </a>
+              </span>
+            </div>
+          </div>
+
+
+    <div class="figure is-tiny">
+      <img src="./static/images/paper/intro_demo.png" alt="Intro demo of the attacker and victim workflow.">
+    </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="intro-demo">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Abstract</h2>
+    <div class="content">
+
+      <p>The open-weight LLM ecosystem is increasingly defined by model composition techniques (such as weight merging, speculative decoding, and vocabulary expansion) that remix capabilities from diverse sources. A critical prerequisite for applying these methods across different model families is tokenizer transplant, which aligns incompatible vocabularies to a shared embedding space. We demonstrate that this essential interoperability step introduces a supply-chain vulnerability: we engineer a single "breaker token" that is functionally inert in a donor model yet reliably reconstructs into a high-salience malicious feature after transplant into a base model. By exploiting the geometry of coefficient reuse, our attack creates an asymmetric realizability gap that sabotages the base model's generation while leaving the donor's utility statistically indistinguishable from nominal behavior. We formalize this as a dual-objective optimization problem and instantiate the attack using a sparse solver. Empirically, the attack is training-free and achieves spectral mimicry to evade outlier detection, while demonstrating structural persistence against fine-tuning and weight merging, highlighting a hidden risk in the pipeline of modular AI composition.
+      </p>
+    </div>
+    <div class="columns is-multiline info-grid">
+      <div class="column is-4">
+        <div class="info-card">
+          <h3 class="title is-5">Attack surface</h3>
+          <p>Shared-basis transplant reconstructs donor-only tokens from shared anchors and reuses coefficients in the base.</p>
+        </div>
+      </div>
+      <div class="column is-4">
+        <div class="info-card">
+          <h3 class="title is-5">Breaker token</h3>
+          <p>One added token is optimized to stay inert in the donor but become high-salience after transplant.</p>
+        </div>
+      </div>
+      <div class="column is-4">
+        <div class="info-card">
+          <h3 class="title is-5">Impact</h3>
+          <p>High base emission rates with negligible donor utility change, persistent under fine-tuning and merging.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>Takeaway:</strong> efficiency-first transplant pipelines need verification to prevent supply-chain trojans.
+    </div>
+  </div>
+</section>
+
+<section class="section" id="overview">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Overview</h2>
+    <div class="content">
+      <p>
+        Tokenizer transplant enables composition across incompatible vocabularies. Standard tools
+        reconstruct donor-only embeddings from shared anchors (often with sparse methods like OMP),
+        then reuse those coefficients in the base. This coefficient reuse is not neutral and can be
+        weaponized to create a gap between donor and base behavior.
+      </p>
+      <ul class="key-list">
+        <li><strong>Shared-basis transplant:</strong> donor-only tokens are approximated as linear combinations of shared anchors.</li>
+        <li><strong>Asymmetric realizability gap:</strong> the donor sees the token as inert while the base realizes a high-salience feature.</li>
+        <li><strong>Single-token sabotage:</strong> a single new vocabulary item is enough to trigger the failure.</li>
+        <li><strong>Training-free:</strong> no fine-tuning or gradient access is required to execute the attack.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="threat-model">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Threat Model</h2>
+    <div class="content">
+      <p>
+        The attacker is a supply-chain adversary who publishes a modified donor tokenizer with one
+        extra token. The victim applies a standard shared-basis transplant tool to align the donor
+        vocabulary to a base model. The breaker token stays dormant in the donor and activates only
+        after transplant into the base.
+      </p>
+    </div>
+    <div class="columns is-multiline info-grid">
+      <div class="column is-6">
+        <div class="info-card">
+          <h3 class="title is-5">Assumptions</h3>
+          <ul>
+            <li>Attacker can ship a donor tokenizer or checkpoint with one added token.</li>
+            <li>Victim uses training-free shared-basis transplant (e.g., OMP or similar).</li>
+            <li>No access to the victim's fine-tuning or downstream data is required.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="info-card">
+          <h3 class="title is-5">Sabotage goals</h3>
+          <ul>
+            <li>Reputation poisoning via toxic or policy-breaking outputs.</li>
+            <li>Adversarial watermarking for latent ownership signaling.</li>
+            <li>Service degradation through EOS mapping or loop-inducing triggers.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="framework">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Attack Framework</h2>
+    <div class="content">
+      <p>
+        The attack exploits coefficient reuse in shared-basis transplant. The adversary estimates
+        cross-model feature overlap from public text, then solves a dual-objective optimization that
+        suppresses donor salience while maximizing base salience under the transplant operator.
+      </p>
+      <ul>
+        <li>Shared anchors define a basis; donor-only tokens are reconstructed with sparse coefficients.</li>
+        <li>Coefficient reuse maps the same coefficients into the base, creating a realizability gap.</li>
+        <li>Solver supports sparse operators (OMP-style) and differentiable transplant operators.</li>
+        <li>Result: the breaker token is inert in the donor but high-impact in the base.</li>
+      </ul>
+    </div>
+    <div class="figure">
+      <img src="./static/images/paper/tokenforge.png" alt="Attack framework and asymmetric realizability.">
+      <p class="figure-caption">
+        Attack visualization: pipeline, victim transplant, and asymmetric realizability.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="evaluation">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Evaluation and Metrics</h2>
+    <div class="content">
+      <p>
+        Experiments focus on whether a breaker token can activate in the base while staying inert in
+        the donor, and whether that behavior survives standard post-processing like fine-tuning and
+        weight merging. Evaluation spans multiple model families and scales, including a lightweight
+        clique (Qwen2-0.5B, Qwen3-0.6B, Gemma-2-2B-it, Gemma-3-1B-it, Ministral-3B-Instruct) and larger
+        cliques that include Gemma-2-9B-it, Llama-3-8B, Mistral-7B, Qwen2-7B, and Qwen3-14B. Cross-scale
+        transfer sets mix smaller models (e.g., SmolLM2-1.7B, Qwen2.5-1.5B, Llama-3.2-3B) with larger donors.
+      </p>
+      <table class="table is-fullwidth metrics-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>What it captures</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sequence Emission Rate (SER)</td>
+            <td>Probability the breaker token appears at least once in a generation for prompt pools (Alpaca, SQuAD v2, GSM8K).</td>
+          </tr>
+          <tr>
+            <td>Utility preservation</td>
+            <td>Perplexity on Wikitext-103 and accuracy on LAMBADA, MMLU, and ARC-Challenge.</td>
+          </tr>
+          <tr>
+            <td>Stealth and controls</td>
+            <td>Spectral z-score mimicry and SER vs hits@k ablations that vary the penalty weight.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="experiments">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Experiments</h2>
+    <div class="content">
+      <p>
+        Experiments validate asymmetric realizability across a fully connected clique of five
+        open-weight models (Qwen2-0.5B, Qwen3-0.6B, Gemma-2-2B-it, Gemma-3-1B-it, Ministral-3B-Instruct),
+        with additional tests on larger and cross-scale pairs. Activation is measured with SER on
+        Alpaca, SQuAD v2, and GSM8K. Utility is tracked on Wikitext-103, LAMBADA, MMLU, and ARC-Challenge.
+      </p>
+      <p>
+        The main figure summarizes the asymmetric realizability gap. Additional panels quantify
+        donor utility preservation, base utility shifts across transplant stages, persistence under
+        LoRA fine-tuning and weight merging, sensitivity to the penalty weight, and spectral mimicry
+        against outlier detection.
+      </p>
+      <h3 class="title is-5">Key findings</h3>
+      <ul class="key-list">
+        <li>Base activation is high while donor activation stays near zero across prompt pools.</li>
+        <li>Donor utility is largely preserved even when base utility shifts after attack.</li>
+        <li>LoRA fine-tuning and weight merging do not reliably remove the planted trigger.</li>
+        <li>Breaker tokens blend into spectral statistics rather than showing up as outliers.</li>
+        <li>Penalty weight tuning exposes a trade-off between donor stealth and base activation.</li>
+      </ul>
+    </div>
+
+    <div class="figure">
+      <img src="./static/images/paper/main_small_bidirectional_ser_dumbbell_grid.png" alt="SER dumbbell plots.">
+      <p class="figure-caption">
+        SER via dumbbell plots across Alpaca, SQuAD v2, GSM8K, and SER max.
+      </p>
+    </div>
+    <div class="content figure-note">
+      <p>
+        Reading guide: each dumbbell shows donor vs base activation for the same breaker token after
+        transplant. Open markers (donor) stay near zero while filled markers (base) rise sharply,
+        illustrating the asymmetric realizability gap across tasks and model pairs.
+      </p>
+    </div>
+
+    <div class="columns figure-grid">
+      <div class="column">
+
+
+    <div class="figure is-small">
+      <img src="./static/images/paper/main_small_bidirectional_lora_ser_persistence_norm_boost.png" alt="SER persistence under fine-tuning.">
+      <p class="figure-caption">
+        Persistence under fine-tuning with norm-boost factors.
+      </p>
+    </div>
+      </div>
+      <div class="column">
+        <div class="figure is-small">
+          <img src="./static/images/paper/main_small_bidirectional_base_utility_slope_3stage.png" alt="Base utility slope chart.">
+          <p class="figure-caption">
+            Base utility changes across pretrained, after-OMP, and after-attack stages.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="content figure-note">
+      <p>
+        Persistence and utility: the left panel shows that breaker tokens survive LoRA fine-tuning,
+        even with norm-boosting, while the right panel tracks how base utility shifts after OMP and
+        after the attack. The key signal is that high activation does not require large utility
+        degradation in the donor.
+      </p>
+    </div>
+
+        <div class="figure is-small">
+          <img src="./static/images/paper/main_small_bidirectional_donor_utility_identity_scatter.png" alt="Donor utility identity scatter.">
+          <p class="figure-caption">
+            Donor utility preservation (post-patch vs pretrained).
+          </p>
+        </div>
+        <div class="content figure-note">
+          <p>
+            Donor utilities stay close to the identity line, indicating that the injected token is
+            statistically indistinguishable from benign behavior when evaluated on standard tasks.
+          </p>
+        </div>
+
+    <div class="columns figure-grid">
+      <div class="column">
+        <div class="figure is-small">
+          <img src="./static/images/paper/main_ser_vs_hitsk_varying_lambda.png" alt="SER vs hits at k ablation.">
+          <p class="figure-caption">
+            Ablation of penalty weight (SER vs Hits@k).
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="figure is-small">
+          <img src="./static/images/paper/spectral_mimicry_zscore.png" alt="Spectral mimicry z-score distribution.">
+          <p class="figure-caption">
+            Spectral mimicry: breaker tokens avoid outlier detection.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="content figure-note">
+      <p>
+        The ablation shows the trade-off controlled by the penalty weight: tightening donor
+        suppression can reduce base activation, and vice versa. The spectral plot highlights why
+        simple outlier detection misses the breaker tokens - they blend into in-distribution
+        embedding statistics.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="limitations">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Limitations and Ethics</h2>
+    <div class="columns is-multiline info-grid">
+      <div class="column is-6">
+        <div class="info-card">
+          <h3 class="title is-5">Limitations</h3>
+          <ul>
+            <li>Focuses on training-free shared-basis transplant rather than costly retraining.</li>
+            <li>Does not evaluate data-driven post-processing or large-scale auditing pipelines.</li>
+            <li>Evaluation is limited to text-only models; multimodal settings are open.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="info-card">
+          <h3 class="title is-5">Ethics</h3>
+          <ul>
+            <li>Releases the optimization framework without weaponized tokenizers.</li>
+            <li>Uses public models and datasets with no private or human-subject data.</li>
+            <li>Aims to harden the open-weight supply chain against silent failures.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <h3 class="title is-5">Defense considerations</h3>
+      <ul class="key-list">
+        <li>Transplant-time verification and auditing of newly added token rows.</li>
+        <li>Spectral filtering or provenance checks for vocabulary changes.</li>
+        <li>Embedding retraining or data-driven post-processing (not evaluated here).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@misc{liu2025trojanvocabularystealthysabotage,
+      title={The Trojan in the Vocabulary: Stealthy Sabotage of LLM Composition}, 
+      author={Xiaoze Liu and Weichen Yu and Matt Fredrikson and Xiaoqian Wang and Jing Gao},
+      year={2025},
+      eprint={2601.00065},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2601.00065}, 
+}
+</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>
+        Template adapted from <a href="https://github.com/nerfies/nerfies.github.io">nerfies.github.io</a>.
+      </p>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
