@@ -1,0 +1,74 @@
+module.exports = {
+    title: 'Xiaoze Liu',
+    plugins: ['@vuepress/back-to-top'],
+    description: '',
+    head: [
+        ['link', { rel: 'icon', href: '/img/icon.ico' }],
+        ['script', { src: 'https://www.googletagmanager.com/gtag/js?id=G-PM84P5861R', async: true }],
+        ['script', {}, `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-PM84P5861R');
+        `
+        ]
+    ],
+    themeConfig: {
+        logo: '/img/icon.png',
+        displayAllHeaders: true,
+        sidebar: {
+            '/blog/': [
+                '',
+                {
+                    title: 'Papers',
+                    collapsable: false,
+                    children: [
+                        'knowledge-graphs/',
+                        'cross-model-collaboration/',
+                        'mutual-rl/',
+                        'vision-wormhole/',
+                        'tokenforge/',
+                        'copyright-notes/',
+                    ],
+                },
+                {
+                    title: 'Random thoughts',
+                    collapsable: false,
+                    children: [
+                        'random-thoughts/vibe-coding',
+                        'random-thoughts/kg-alignment',
+                        'random-thoughts/llm-reviewing',
+                        'random-thoughts/eureka',
+                    ],
+                },
+            ],
+        },
+        nav: [
+            { text: 'Blog', link: '/blog/' },
+            { text: 'Publications', link: '/pub/' },
+            { text: 'LinkedIn', link: 'https://www.linkedin.com/in/xzliu/' },
+            { text: 'Scholar', link: 'https://scholar.google.com/citations?user=MaIQOwsAAAAJ' },
+            { text: 'GitHub', link: 'https://www.github.com/xz-liu' },
+            { text: 'Twitter', link: 'https://twitter.com/_XiaozeLiu' },
+
+        ],
+        lastUpdated: 'Last Updated',
+        smoothScroll: true,
+
+    }, markdown: {
+        extendMarkdown: md => {
+            md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+                const token = tokens[idx];
+                const hrefIndex = token.attrIndex('href');
+                const href = token.attrs[hrefIndex][1];
+
+                return `<my-link href="${href}">`;
+            };
+
+            md.renderer.rules.link_close = (tokens, idx, options, env, self) => {
+                return '</my-link>';
+            };
+        }
+    },
+}
+// 
